@@ -1,7 +1,7 @@
 - Housekeeping Room List Assigner standalone App.
 
 - Before running this HousekeepingRoomListAssigner app
-  - Create Folder path C:\HousekeepingReportCreatorAppFiles\RoomConfiguration
+  - Create Folder path "C:\HousekeepingReportCreatorAppFiles\HousekeepingReport"
   - Add JAR/Folder ListIntegratorLibrary (https://github.com/hbhakta2/ListIntegratorLibrary)
   - Run HotelRoomlistConfigurator app (https://github.com/hbhakta2/HotelRoomListConfigurator) once with at least one room added
   - HousekeepingRoomListAssigner allows hotel operator to

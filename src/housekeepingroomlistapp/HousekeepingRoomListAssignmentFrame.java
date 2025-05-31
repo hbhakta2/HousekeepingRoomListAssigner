@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -119,6 +121,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 disableBothCOAndSOButton();
                 completeRoomAssignmentTask(RoomStatus.CHECKED_OUT);
+                updateAllList();
                 enableBothCOAndSOButton();
             }
         });
@@ -128,6 +131,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 disableBothCOAndSOButton();
                 completeRoomAssignmentTask(RoomStatus.STAY_OVER);
+                updateAllList();
                 enableBothCOAndSOButton();
             }
         });
@@ -163,9 +167,16 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             }
 
             private void completeAddingToListAndWritingToTextFile() {
-                completeAddingToList();
+                disableSaveButton();
+                disableCheckBoxes();
                 completeWritingToTextFile();
+                enableCheckBoxes();
+                enableSaveButton();
             }            
+
+            
+
+            
         });
         disableBothCOAndSOButton();
         
@@ -349,6 +360,10 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         repaint();
     }
     
+    private void updateAllList() {
+        roomListOperator.clearAllList();
+        completeAddingToList();
+    }
     /**
      * Adds room to list from tableModel using roomListOperator
      */
@@ -400,6 +415,26 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
      */
     private void openErrorDialog(Exception e) {
         JOptionPane.showMessageDialog(this, "Error occurred while creating housekeeping report.", "Error", JOptionPane.ERROR_MESSAGE);        
+    }
+    
+    private void disableCheckBoxes() {
+        for (JCheckBox jcb : checkboxes) {
+            jcb.setEnabled(false);
+        }
+    }
+
+    private void disableSaveButton() {
+        saveButton.setEnabled(false);
+    }
+
+    private void enableSaveButton() {
+        saveButton.setEnabled(true);
+    }
+
+    private void enableCheckBoxes() {
+        for (JCheckBox jcb : checkboxes) {
+            jcb.setEnabled(true);
+        }
     }
     
 }

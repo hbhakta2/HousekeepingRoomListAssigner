@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Box;
@@ -25,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import listintegratorlibrary.Employee;
@@ -67,6 +69,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
     private JTextField employeeNameField;
     private JLabel dateLabel;
     private JFormattedTextField dateField;
+    private JButton removeButton;
     
     public HousekeepingRoomListAssignmentFrame() throws HeadlessException {
         listIntegrator = new ListIntegrator();
@@ -119,20 +122,24 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         markAsCheckOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                disableRemoveButton();
                 disableBothCOAndSOButton();
                 completeRoomAssignmentTask(RoomStatus.CHECKED_OUT);
                 updateAllList();
                 enableBothCOAndSOButton();
+                enableRemoveButton();
             }
         });
         
         markAsStayOverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                disableRemoveButton();
                 disableBothCOAndSOButton();
                 completeRoomAssignmentTask(RoomStatus.STAY_OVER);
                 updateAllList();
                 enableBothCOAndSOButton();
+                enableRemoveButton();
             }
         });
         panel.add(markAsCheckOutButton);
@@ -172,11 +179,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
                 completeWritingToTextFile();
                 enableCheckBoxes();
                 enableSaveButton();
-            }            
-
-            
-
-            
+            }
         });
         disableBothCOAndSOButton();
         
@@ -195,8 +198,16 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             public void setValueAt(Object aValue, int row, int column) {
                 super.setValueAt(aValue, row, column);
             }
-            
-            
+
+            @Override
+            public void removeRow(int row) {
+                super.removeRow(row); 
+            }
+
+            @Override
+            public void rowsRemoved(TableModelEvent event) {
+                super.rowsRemoved(event);
+            }
         };
         table = new JTable(tableModel);
         table.setAutoCreateRowSorter(true);
@@ -205,7 +216,23 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         table.setFont(new Font("Arial", Font.BOLD, 12));
         JScrollPane scrollPaneCenter = new JScrollPane(table);
         add(scrollPaneCenter, BorderLayout.CENTER);
-
+        
+        panel3 = new JPanel();
+        panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
+        removeButton = new JButton("Remove");
+        removeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeSelectedRowsFromDataTableModel();
+                if (tableModel.getRowCount() <= 0) {
+                    disableRemoveButton();
+                }
+                updateAllList();
+            }
+        });
+        disableRemoveButton();
+        panel3.add(removeButton);
+        add(panel3, BorderLayout.EAST);
         setVisible(true);
         revalidate();
         repaint();
@@ -354,18 +381,23 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         }
         if (!found) { 
             tableModel.addRow(rowData);
-            
         }
         revalidate();
         repaint();
     }
     
+    /**
+     * Updates all list
+     * calls to completeAddingToList()
+     */
     private void updateAllList() {
         roomListOperator.clearAllList();
         completeAddingToList();
     }
+    
     /**
      * Adds room to list from tableModel using roomListOperator
+     * calls add method of RoomListOperator class
      */
     private void completeAddingToList() {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -437,4 +469,40 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         }
     }
     
+    private void disableRemoveButton() {
+        removeButton.setEnabled(false);
+    }
+    
+    private void enableRemoveButton() {
+        removeButton.setEnabled(true);
+    }
+
+    /**
+     * Removes selected rows from the data table 
+     */
+    private void removeSelectedRowsFromDataTableModel() {
+        int[] indicesOfAllSelectedRows = table.getSelectedRows();
+        List<Room> temp = new ArrayList<>();
+        for (int i = 0; i < indicesOfAllSelectedRows.length; i++) {
+            Integer number = (Integer) tableModel.getValueAt(indicesOfAllSelectedRows[i], 0);
+            String roomType = (String) tableModel.getValueAt(indicesOfAllSelectedRows[i], 1);
+            RoomStatus status = (RoomStatus) tableModel.getValueAt(indicesOfAllSelectedRows[i], 2);
+            temp.add(new Room(number, roomType, status));
+        }
+        
+        outer:
+        for (int k = 0; k < temp.size(); k++ ){
+            Room room = temp.get(k);
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                Integer number = (Integer) tableModel.getValueAt(i, 0);
+                String roomType = (String) tableModel.getValueAt(i, 1);
+                RoomStatus status = (RoomStatus) tableModel.getValueAt(i, 2);
+                if (room.getNumber() == number && room.getType().equals(roomType) && room.getStatus() == status) {
+                    tableModel.removeRow(i);
+                    continue outer;
+                }
+            }
+        }
+        temp.clear();
+    }
 }

@@ -1,18 +1,18 @@
 package housekeepingroomlistapp;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -39,55 +39,68 @@ import listintegratorlibrary.Room.RoomStatus;
 import listintegratorlibrary.RoomListOperator;
 
 /**
- * HousekeepingRoomListAssignmentFrame class
- * inherits JFrame components
- * creates GUI components
- * Requires ListIntegratorLibrary
- * 
+ * HousekeepingRoomListAssignmentFrame class inherits JFrame components creates
+ * GUI components Requires ListIntegratorLibrary
+ *
  * @author Hardikkumar Bhakta
  */
 public class HousekeepingRoomListAssignmentFrame extends JFrame {
-    
-    private JPanel contentPane, panel;
-    private JLabel roomNumberLabel, roomStatusLabel;
-    private DefaultTableModel tableModel; 
+
+    private ListIntegrator listIntegrator;
+    private RoomListOperator roomListOperator;
+
+    private JPanel northPanel;
+    private JPanel eastPanel;
+    private JPanel westPanel;
+    private JPanel optionalLabelPanel;
+    private JPanel stayOverWagePanel;
+    private JPanel checkedOutWagePanel;
+    private JPanel southPanel;
+
+    private DefaultTableModel tableModel;
     private JTable table;
-    private JTextArea displayArea;
+    private final String[] columnNames = {"Room Number", "Type", "Status"};
+    private Object[][] data;
+
     private ArrayList<JCheckBox> checkboxes;
     private JCheckBox selectAllCheckBox;
-    private ListIntegrator listIntegrator;
-    private JPanel panel2;
+    private JCheckBox optionalFeatureCheckBox;
+
     private JButton markAsStayOverButton;
     private JButton markAsCheckOutButton;
     private JButton saveButton;
-    private JPanel panel3;
-    private ActionListener checkBoxListener;
-    private RoomListOperator roomListOperator;
-    private final String[] columnNames = {"Room Number", "Type", "Status"};
-    private Object[][] data;
-    private JLabel employeeLabel;
-    private JTextField employeeNameField;
-    private JLabel dateLabel;
-    private JFormattedTextField dateField;
     private JButton removeButton;
-    
+
+    private ActionListener checkBoxListener;
+
+    private JLabel employeeLabel;
+    private JLabel dateLabel;
+    private JLabel stayOverCleanWageLabel;
+    private JLabel checkedOutCleanWageLabel;
+
+    private JTextField employeeNameField;
+    private JFormattedTextField dateField;
+    private JFormattedTextField checkedOutCleaningWageField;
+    private JFormattedTextField stayOverCleaningWageField;
+
     public HousekeepingRoomListAssignmentFrame() throws HeadlessException {
         listIntegrator = new ListIntegrator();
         roomListOperator = new RoomListOperator();
         readFromConfigurationFileToList();
-        
-        setTitle("Housekeeper Room List Assigner");
+
+        setTitle("Housekeeping Room List Assigner");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700,700);
+        setSize(700, 700);
         setLocationRelativeTo(null);
-        
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        Font font = new Font("Arial", Font.BOLD, 14);
+        westPanel = new JPanel();
+        westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.Y_AXIS));
         checkboxes = new ArrayList<>();
-        
+
         selectAllCheckBox = new JCheckBox("Select All");
-        panel.add(selectAllCheckBox);
-        
+        westPanel.add(selectAllCheckBox);
+
         checkBoxListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -112,13 +125,13 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
                 }
             }
         });
-        
-        JScrollPane scrollPaneWest = new JScrollPane(panel);
+
+        JScrollPane scrollPaneWest = new JScrollPane(westPanel);
         add(scrollPaneWest, BorderLayout.WEST);
-        
+
         markAsCheckOutButton = new JButton("Mark as CHECKED OUT");
         markAsStayOverButton = new JButton("Mark as STAY OVER");
-        
+
         markAsCheckOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,7 +143,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
                 enableRemoveButton();
             }
         });
-        
+
         markAsStayOverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -142,30 +155,28 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
                 enableRemoveButton();
             }
         });
-        panel.add(markAsCheckOutButton);
-        panel.add(Box.createRigidArea(new Dimension(5,0)));
-        panel.add(markAsStayOverButton);
-        panel.add(Box.createRigidArea(new Dimension(5,0)));
-        
-        panel2 = new JPanel();
-        panel2.setLayout(new BoxLayout(panel2, BoxLayout.X_AXIS));
-        
+        westPanel.add(markAsCheckOutButton);
+        westPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        westPanel.add(markAsStayOverButton);
+        westPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+
+        northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
         employeeLabel = new JLabel("Employee: ");
         employeeNameField = new JTextField();
         employeeNameField.setColumns(20);
-        
+        employeeNameField.setFont(font);
         dateLabel = new JLabel("Date: ");
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        
-        dateField = new JFormattedTextField(new Date());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        dateField = new JFormattedTextField(simpleDateFormat.format(new Date()));
         dateField.setColumns(20);
-        
-        panel2.add(employeeLabel);
-        panel2.add(employeeNameField);
-        panel2.add(Box.createRigidArea(new Dimension(10,0)));
-        panel2.add(dateLabel);
-        panel2.add(dateField);
-        
+        dateField.setFont(font);
+        northPanel.add(employeeLabel);
+        northPanel.add(employeeNameField);
+        northPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        northPanel.add(dateLabel);
+        northPanel.add(dateField);
+
         saveButton = new JButton("SAVE");
         saveButton.addActionListener(new ActionListener() {
             @Override
@@ -182,12 +193,12 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             }
         });
         disableBothCOAndSOButton();
-        
-        panel2.add(saveButton);
-        add(panel2, BorderLayout.NORTH);
-        
+
+        northPanel.add(saveButton);
+        add(northPanel, BorderLayout.NORTH);
+
         data = createObjectsForTableRows();
-        
+
         tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -201,7 +212,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
 
             @Override
             public void removeRow(int row) {
-                super.removeRow(row); 
+                super.removeRow(row);
             }
 
             @Override
@@ -216,9 +227,9 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         table.setFont(new Font("Arial", Font.BOLD, 12));
         JScrollPane scrollPaneCenter = new JScrollPane(table);
         add(scrollPaneCenter, BorderLayout.CENTER);
-        
-        panel3 = new JPanel();
-        panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
+
+        eastPanel = new JPanel();
+        eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
         removeButton = new JButton("Remove");
         removeButton.addActionListener(new ActionListener() {
             @Override
@@ -231,12 +242,60 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             }
         });
         disableRemoveButton();
-        panel3.add(removeButton);
-        add(panel3, BorderLayout.EAST);
+        eastPanel.add(removeButton);
+        add(eastPanel, BorderLayout.EAST);
+
+        southPanel = new JPanel();
+        southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
+
+        optionalLabelPanel = new JPanel();
+        optionalLabelPanel.setLayout(new BoxLayout(optionalLabelPanel, BoxLayout.X_AXIS));
+        optionalFeatureCheckBox = new JCheckBox("Input rate per room cleaned (optional): ");
+        optionalFeatureCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isSelected = optionalFeatureCheckBox.isSelected();
+                if (isSelected) {
+                    enableCOAndSORateField();
+                } else {
+                    disableCOAndSORateField();
+                }
+            }
+        });
+        optionalLabelPanel.add(optionalFeatureCheckBox);
+        optionalLabelPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        southPanel.add(optionalLabelPanel, BorderLayout.CENTER);
+
+        NumberFormat numberInstance = NumberFormat.getNumberInstance();
+        checkedOutWagePanel = new JPanel();
+        checkedOutWagePanel.setLayout(new BoxLayout(checkedOutWagePanel, BoxLayout.X_AXIS));
+        Dimension rateFieldDimension = new Dimension(100, 25);
+        checkedOutCleanWageLabel = new JLabel("C/O Rate: ");
+        checkedOutWagePanel.add(checkedOutCleanWageLabel);
+        checkedOutCleaningWageField = new JFormattedTextField(numberInstance);
+        checkedOutCleaningWageField.setFont(font);
+        checkedOutCleaningWageField.setPreferredSize(rateFieldDimension);
+        checkedOutCleaningWageField.setMaximumSize(checkedOutCleaningWageField.getPreferredSize());
+        checkedOutWagePanel.add(checkedOutCleaningWageField, BorderLayout.CENTER);
+        southPanel.add(checkedOutWagePanel, BorderLayout.WEST);
+
+        stayOverWagePanel = new JPanel();
+        stayOverWagePanel.setLayout(new BoxLayout(stayOverWagePanel, BoxLayout.X_AXIS));
+        stayOverCleanWageLabel = new JLabel("S/O Rate: ");
+        stayOverWagePanel.add(stayOverCleanWageLabel);
+        stayOverCleaningWageField = new JFormattedTextField(numberInstance);
+        stayOverCleaningWageField.setFont(font);
+        stayOverCleaningWageField.setPreferredSize(rateFieldDimension);
+        stayOverCleaningWageField.setMaximumSize(stayOverCleaningWageField.getPreferredSize());
+        stayOverWagePanel.add(stayOverCleaningWageField, BorderLayout.CENTER);
+        southPanel.add(stayOverWagePanel, BorderLayout.EAST);
+        disableCOAndSORateField();
+        add(southPanel, BorderLayout.SOUTH);
+
         setVisible(true);
         revalidate();
         repaint();
-        
+
     }
 
     public HousekeepingRoomListAssignmentFrame(GraphicsConfiguration gc) {
@@ -278,11 +337,12 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
                 }
             }
         }
-        
+
     }
-    
+
     /**
      * Creates row data to be displayed in dataTable
+     *
      * @return Object[][] data
      */
     private Object[][] createObjectsForTableRows() {
@@ -306,7 +366,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             JCheckBox checkBox = new JCheckBox(room.toString());
             checkBox.addActionListener(checkBoxListener);
             checkboxes.add(checkBox);
-            panel.add(checkBox);
+            westPanel.add(checkBox);
         }
     }
 
@@ -317,7 +377,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         markAsCheckOutButton.setEnabled(false);
         markAsStayOverButton.setEnabled(false);
     }
-    
+
     /**
      * enables markAsCheckOutButton & markAsStayOverButton
      */
@@ -325,11 +385,11 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         markAsCheckOutButton.setEnabled(true);
         markAsStayOverButton.setEnabled(true);
     }
-    
+
     /**
-     * Assign room status 
-     * calls addRowToTable() method
-     * @param roomStatus 
+     * Assign room status calls addRowToTable() method
+     *
+     * @param roomStatus
      */
     private void completeRoomAssignmentTask(RoomStatus roomStatus) {
         for (JCheckBox jcb : checkboxes) {
@@ -357,9 +417,9 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
     }
 
     /**
-     * Adds new row to data table
-     * calls revalidate() and repaint() methods
-     * @param room 
+     * Adds new row to data table calls revalidate() and repaint() methods
+     *
+     * @param room
      */
     private void addRowToTable(Room room) {
         Object[] rowData = {room.getNumber(), room.getType(), room.getStatus()};
@@ -379,25 +439,24 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
                 break;
             }
         }
-        if (!found) { 
+        if (!found) {
             tableModel.addRow(rowData);
         }
         revalidate();
         repaint();
     }
-    
+
     /**
-     * Updates all list
-     * calls to completeAddingToList()
+     * Updates all list calls to completeAddingToList()
      */
     private void updateAllList() {
         roomListOperator.clearAllList();
         completeAddingToList();
     }
-    
+
     /**
-     * Adds room to list from tableModel using roomListOperator
-     * calls add method of RoomListOperator class
+     * Adds room to list from tableModel using roomListOperator calls add method
+     * of RoomListOperator class
      */
     private void completeAddingToList() {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -407,18 +466,31 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             roomListOperator.add(new Room(number, roomType, status));
         }
     }
-    
+
     /**
-     * Gets employeeNameFiled, dateField, updated content, and creates housekeepingreport
-     * Gets content from housekeeping report
-     * Writes content to text file
+     * Gets employeeNameFiled, dateField, updated content, and creates
+     * housekeepingreport Gets content from housekeeping report Writes content
+     * to text file
      */
     private void completeWritingToTextFile() {
         StringBuilder sb = new StringBuilder();
         Employee employee = new Employee(employeeNameField.getText());
         String date = dateField.getText();
         String formattedList = roomListOperator.getUpdatedContent();
+        
         HouseKeepingReportCreator houseKeepingReportCreator = new HouseKeepingReportCreator(employee.toString(), date, formattedList);
+        
+        String coCleaningWage = checkedOutCleaningWageField.getText();
+        String soCleaningWage = stayOverCleaningWageField.getText();
+        String optionalContent = "";
+        
+        if (!coCleaningWage.isEmpty() && !soCleaningWage.isEmpty()) {
+            roomListOperator.setWagePerCheckedOutRoomCleaned(Double.valueOf(coCleaningWage));
+            roomListOperator.setWagePerStayOverRoomCleaned(Double.valueOf(soCleaningWage));
+            optionalContent = roomListOperator.getOptionalContent(date);
+            houseKeepingReportCreator.appendOptionalContent(optionalContent);
+        }
+        
         ListWriter lw = new ListWriter();
         String content = houseKeepingReportCreator.getReport();
         try {
@@ -430,25 +502,25 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
     }
 
     /**
-     * Display success dialog message with 
-     * location of file where data is saved
+     * Display success dialog message with location of file where data is saved
      */
     private void openSuccessDialog(ListWriter lw) {
         String savedLocation = "Housekeeping list saved successfully at File Path: \n" + lw.getsHousekeepingReportTextFilePath();
         JTextArea jta = new JTextArea(savedLocation);
         jta.setFont(new Font("Arial", Font.BOLD, 14));
         jta.setEditable(false);
-        JOptionPane.showMessageDialog(this, new JScrollPane(jta), "Save Confirmation", JOptionPane.INFORMATION_MESSAGE);        
+        JOptionPane.showMessageDialog(this, new JScrollPane(jta), "Save Confirmation", JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
      * Display error dialog message
-     * @param e 
+     *
+     * @param e
      */
     private void openErrorDialog(Exception e) {
-        JOptionPane.showMessageDialog(this, "Error occurred while creating housekeeping report.", "Error", JOptionPane.ERROR_MESSAGE);        
+        JOptionPane.showMessageDialog(this, "Error occurred while creating housekeeping report.", "Error", JOptionPane.ERROR_MESSAGE);
     }
-    
+
     private void disableCheckBoxes() {
         for (JCheckBox jcb : checkboxes) {
             jcb.setEnabled(false);
@@ -468,17 +540,17 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             jcb.setEnabled(true);
         }
     }
-    
+
     private void disableRemoveButton() {
         removeButton.setEnabled(false);
     }
-    
+
     private void enableRemoveButton() {
         removeButton.setEnabled(true);
     }
 
     /**
-     * Removes selected rows from the data table 
+     * Removes selected rows from the data table
      */
     private void removeSelectedRowsFromDataTableModel() {
         int[] indicesOfAllSelectedRows = table.getSelectedRows();
@@ -489,9 +561,9 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
             RoomStatus status = (RoomStatus) tableModel.getValueAt(indicesOfAllSelectedRows[i], 2);
             temp.add(new Room(number, roomType, status));
         }
-        
+
         outer:
-        for (int k = 0; k < temp.size(); k++ ){
+        for (int k = 0; k < temp.size(); k++) {
             Room room = temp.get(k);
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 Integer number = (Integer) tableModel.getValueAt(i, 0);
@@ -505,4 +577,19 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         }
         temp.clear();
     }
+
+    private void disableCOAndSORateField() {
+        checkedOutCleaningWageField.setText("");
+        stayOverCleaningWageField.setText("");
+        checkedOutCleaningWageField.setEditable(false);
+        stayOverCleaningWageField.setEditable(false);
+        
+    }
+
+    private void enableCOAndSORateField() {
+        checkedOutCleaningWageField.setEditable(true);
+        stayOverCleaningWageField.setEditable(true);
+    }
+
+    
 }

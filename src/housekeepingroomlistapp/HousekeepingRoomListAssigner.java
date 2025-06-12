@@ -17,7 +17,7 @@ public class HousekeepingRoomListAssigner {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        HousekeepingRoomListAssignmentFrame frame = new HousekeepingRoomListAssignmentFrame();
+        HousekeepingRoomListAssignmentFrame housekeepingRoomListAssignmentFrame = new HousekeepingRoomListAssignmentFrame();
     }
     
 }

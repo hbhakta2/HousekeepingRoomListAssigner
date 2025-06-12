@@ -1,4 +1,5 @@
 # HousekeepingRoomListAssigner GUI application 
+Use cases:
 Housekeeping Room List Assigner application allows hotel operators to 
 - create housekeeping room list assignment using checboxes to mark selected room numbers as checked-out or stayover.
 - view updated list in data table model, sort list in data table by room number, room type, and its status.
@@ -8,7 +9,7 @@ Housekeeping Room List Assigner application allows hotel operators to
 
 Dependencies:
 - ListIntegratorLibary (https://github.com/hbhakta2/ListIntegratorLibrary)
-- Create folder path "C:\HousekeepingReportCreatorAppFiles\RoomConfiguration"
+- Create folder path "C:\HousekeepingReportCreatorAppFiles\HousekeepingReport"
 - Run HotelRoomListConfigurator application once, and add at least one room, roomtype, save & close (https://github.com/hbhakta2/HotelRoomListConfigurator)
 
 Features:

@@ -1,5 +1,5 @@
 # HousekeepingRoomListAssigner GUI application 
-Allows hotel operators to 
+Housekeeping Room List Assigner application allows hotel operators to 
 - create housekeeping room list assignment using checboxes to mark selected room numbers as checked-out or stayover.
 - view updated list in data table model, sort list in data table by room number, room type, and its status.
 - remove selected rows from data table

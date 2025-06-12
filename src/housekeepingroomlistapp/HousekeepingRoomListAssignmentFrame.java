@@ -249,7 +249,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
 
         optionalLabelPanel = new JPanel();
         optionalLabelPanel.setLayout(new BoxLayout(optionalLabelPanel, BoxLayout.X_AXIS));
-        optionalFeatureCheckBox = new JCheckBox("Input rate per room cleaned (optional): ");
+        optionalFeatureCheckBox = new JCheckBox("Input wage per room cleaned (optional): ");
         optionalFeatureCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -269,7 +269,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
         checkedOutWagePanel = new JPanel();
         checkedOutWagePanel.setLayout(new BoxLayout(checkedOutWagePanel, BoxLayout.X_AXIS));
         Dimension rateFieldDimension = new Dimension(100, 25);
-        checkedOutCleanWageLabel = new JLabel("C/O Rate: ");
+        checkedOutCleanWageLabel = new JLabel("C/O Wage: ");
         checkedOutWagePanel.add(checkedOutCleanWageLabel);
         checkedOutCleaningWageField = new JFormattedTextField(numberInstance);
         checkedOutCleaningWageField.setFont(font);
@@ -280,7 +280,7 @@ public class HousekeepingRoomListAssignmentFrame extends JFrame {
 
         stayOverWagePanel = new JPanel();
         stayOverWagePanel.setLayout(new BoxLayout(stayOverWagePanel, BoxLayout.X_AXIS));
-        stayOverCleanWageLabel = new JLabel("S/O Rate: ");
+        stayOverCleanWageLabel = new JLabel("S/O Wage: ");
         stayOverWagePanel.add(stayOverCleanWageLabel);
         stayOverCleaningWageField = new JFormattedTextField(numberInstance);
         stayOverCleaningWageField.setFont(font);

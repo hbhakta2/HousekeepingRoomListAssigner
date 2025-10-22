@@ -23,3 +23,5 @@ Features:
               - 1) Checkbox to activate this feature,
               - 2) C/O Wage label and input field,
               - 3) S/O Wage label and input field
+
+Download executable application & installation instructions: https://www.dropbox.com/scl/fi/a7r41ibbnt8oh8ck8e8uv/output-1.zip
